@@ -1,0 +1,10 @@
+[project]
+name = "price-manager"
+version = "0.1.0"
+description = "Sistema de gestão de coleta e análise de preços via Outlook"
+readme = "README.md"
+authors = [{name = "Flávio"}]
+requires-python = ">=3.10"
+
+[project.scripts]
+price-manager = "price_manager.cli:main"
