@@ -1,22 +1,22 @@
 const stats = [
-  { label: "Cotações ativas", value: "128" },
-  { label: "Rotas monitoradas", value: "42" },
-  { label: "Fornecedores ativos", value: "18" },
-  { label: "Risco de rollover alto", value: "12%" }
+  { label: "Produtos monitorados", value: "86" },
+  { label: "Fornecedores ativos", value: "24" },
+  { label: "Cotações recentes", value: "112" },
+  { label: "Alertas de aumento", value: "7" }
 ];
 
 const insights = [
   {
     title: "Tendência de preço (90 dias)",
-    description: "Queda média de 6% nas rotas Santos → Rotterdam para 40HC."
+    description: "Ácido Cítrico com alta de 4% e maior volatilidade nas últimas 8 semanas."
   },
   {
-    title: "Transit time médio",
-    description: "22 dias na rota Shanghai → Santos com variação de ±3 dias."
+    title: "Lead time médio",
+    description: "9 dias úteis nos itens de embalagens, com pico na região Sudeste."
   },
   {
     title: "Top fornecedores",
-    description: "Atlantic Shipping lidera em volume de cotações aprovadas."
+    description: "Atlas Distribuidora lidera em consistência e menor variação de preço."
   }
 ];
 
@@ -44,7 +44,7 @@ export default function DashboardPage() {
       <div className="card">
         <h3 className="text-base font-semibold">Filtros globais</h3>
         <div className="mt-4 grid gap-4 md:grid-cols-4">
-          {["Período", "Fornecedor", "Origem", "Destino"].map((label) => (
+          {["Período", "Fornecedor", "Produto", "Categoria"].map((label) => (
             <div key={label} className="space-y-2">
               <label className="text-xs font-semibold uppercase text-slate-500">{label}</label>
               <div className="h-10 rounded-lg border border-dashed border-slate-300 bg-slate-50" />

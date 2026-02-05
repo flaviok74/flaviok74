@@ -1,14 +1,14 @@
 const auditRows = [
   {
     id: "1",
-    entity: "freight_quote",
+    entity: "price_quote",
     action: "UPDATE",
-    user: "Operador",
+    user: "Analista",
     date: "2024-02-05"
   },
   {
     id: "2",
-    entity: "supplier",
+    entity: "product",
     action: "CREATE",
     user: "Admin",
     date: "2024-02-03"

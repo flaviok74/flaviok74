@@ -4,11 +4,11 @@ export default function ImportsPage() {
       <div className="card">
         <h2 className="text-lg font-semibold">Nova cotação por link</h2>
         <p className="text-sm text-slate-600">
-          Cole o link da cotação, selecione fornecedor, origem/destino e moeda. O parser automático
+          Cole o link de uma tabela de preços, selecione fornecedor, produtos-chave e moeda. O parser automático
           será integrado em versões futuras.
         </p>
         <div className="mt-6 grid gap-4 md:grid-cols-2">
-          {["URL da cotação", "Fornecedor", "Origem", "Destino", "Moeda", "Validade"].map((label) => (
+          {["URL da tabela", "Fornecedor", "Produtos", "Moeda", "Validade", "Categoria"].map((label) => (
             <div key={label} className="space-y-2">
               <label className="text-xs font-semibold uppercase text-slate-500">{label}</label>
               <div className="h-10 rounded-lg border border-dashed border-slate-300 bg-slate-50" />

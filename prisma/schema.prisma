@@ -9,8 +9,8 @@ datasource db {
 
 enum UserRole {
   ADMIN
-  OPERATOR
-  AUDITOR
+  ANALYST
+  VIEWER
 }
 
 enum QuoteSourceType {
@@ -22,25 +22,6 @@ enum QuoteStatus {
   IMPORTED_PENDING_REVIEW
   APPROVED
   REJECTED
-}
-
-enum RolloverRisk {
-  LOW
-  MEDIUM
-  HIGH
-}
-
-enum ChargeGroup {
-  ORIGIN
-  OCEAN
-  DESTINATION
-}
-
-enum ChargeType {
-  FIXED
-  PER_CONTAINER
-  PER_TON
-  OTHER
 }
 
 enum AuditAction {
@@ -55,12 +36,11 @@ model Organization {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  users      User[]
-  suppliers  Supplier[]
-  ports      Port[]
-  routes     Route[]
-  quotes     FreightQuote[]
-  auditLogs  AuditLog[]
+  users     User[]
+  vendors   Vendor[]
+  products  Product[]
+  quotes    PriceQuote[]
+  auditLogs AuditLog[]
 }
 
 model User {
@@ -75,14 +55,14 @@ model User {
   updatedAt      DateTime @updatedAt
 
   organization Organization @relation(fields: [organizationId], references: [id])
-  createdQuotes FreightQuote[] @relation("QuoteCreatedBy")
-  reviewedQuotes FreightQuote[] @relation("QuoteReviewedBy")
-  auditLogs AuditLog[]
+  createdQuotes PriceQuote[] @relation("QuoteCreatedBy")
+  reviewedQuotes PriceQuote[] @relation("QuoteReviewedBy")
+  auditLogs      AuditLog[]
 
   @@index([organizationId])
 }
 
-model Supplier {
+model Vendor {
   id             String   @id @default(uuid())
   organizationId String
   name           String
@@ -96,129 +76,102 @@ model Supplier {
   updatedAt      DateTime @updatedAt
 
   organization Organization @relation(fields: [organizationId], references: [id])
-  quotes        FreightQuote[]
+  quotes        PriceQuote[]
 
   @@index([organizationId])
   @@index([name])
 }
 
-model Port {
+model ProductCategory {
   id             String   @id @default(uuid())
   organizationId String
   name           String
-  country        String
-  code           String?
-  type           String   @default("sea")
-  active         Boolean  @default(true)
+  description    String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
   organization Organization @relation(fields: [organizationId], references: [id])
-  originRoutes  Route[] @relation("OriginPort")
-  destinationRoutes Route[] @relation("DestinationPort")
-  originQuotes  FreightQuote[] @relation("OriginPortQuote")
-  destinationQuotes FreightQuote[] @relation("DestinationPortQuote")
+  products      Product[]
 
   @@index([organizationId])
-  @@index([country])
 }
 
-model ContainerType {
-  id          String   @id @default(uuid())
-  name        String
-  code        String   @unique
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-model Route {
+model Product {
   id             String   @id @default(uuid())
   organizationId String
-  originPortId   String
-  destinationPortId String
+  categoryId     String?
+  name           String
+  sku            String?
+  unit           String   @default("un")
   active         Boolean  @default(true)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
   organization Organization @relation(fields: [organizationId], references: [id])
-  originPort   Port @relation("OriginPort", fields: [originPortId], references: [id])
-  destinationPort Port @relation("DestinationPort", fields: [destinationPortId], references: [id])
+  category     ProductCategory? @relation(fields: [categoryId], references: [id])
+  priceLines   PriceQuoteLine[]
 
   @@index([organizationId])
-  @@unique([organizationId, originPortId, destinationPortId])
+  @@index([name])
 }
 
-model FreightQuote {
-  id                     String        @id @default(uuid())
-  organizationId         String
-  supplierId             String
-  originPortId           String
-  destinationPortId      String
-  carrier                String?
-  service                String?
-  incoterm               String?
-  currency               String
-  validityStart          DateTime?
-  validityEnd            DateTime
-  transitTimeDays        Int?
-  rolloverRisk           RolloverRisk?
-  rolloverNotes          String?
-  freeTimeOriginDays     Int?
-  freeTimeDestinationDays Int?
-  observations           String?
-  sourceType             QuoteSourceType
-  sourceUrl              String?
-  sourceReference        String?
-  status                 QuoteStatus   @default(IMPORTED_PENDING_REVIEW)
-  reviewedByUserId       String?
-  reviewedAt             DateTime?
-  createdByUserId        String
-  createdAt              DateTime      @default(now())
-  updatedAt              DateTime      @updatedAt
+model PriceQuote {
+  id             String        @id @default(uuid())
+  organizationId String
+  vendorId       String
+  currency       String
+  validFrom      DateTime?
+  validTo        DateTime
+  status         QuoteStatus   @default(IMPORTED_PENDING_REVIEW)
+  sourceType     QuoteSourceType
+  sourceUrl      String?
+  sourceReference String?
+  notes          String?
+  reviewedByUserId String?
+  reviewedAt       DateTime?
+  createdByUserId  String
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 
   organization Organization @relation(fields: [organizationId], references: [id])
-  supplier     Supplier @relation(fields: [supplierId], references: [id])
-  originPort   Port @relation("OriginPortQuote", fields: [originPortId], references: [id])
-  destinationPort Port @relation("DestinationPortQuote", fields: [destinationPortId], references: [id])
+  vendor       Vendor @relation(fields: [vendorId], references: [id])
   createdBy    User @relation("QuoteCreatedBy", fields: [createdByUserId], references: [id])
   reviewedBy   User? @relation("QuoteReviewedBy", fields: [reviewedByUserId], references: [id])
-  costLines    FreightQuoteCost[]
+  priceLines   PriceQuoteLine[]
   attachments  QuoteAttachment[]
 
   @@index([organizationId])
-  @@index([supplierId])
-  @@index([originPortId, destinationPortId])
+  @@index([vendorId])
 }
 
-model FreightQuoteCost {
-  id             String      @id @default(uuid())
-  freightQuoteId String
-  group          ChargeGroup
-  chargeName     String
-  chargeType     ChargeType?
-  amount20gp     Decimal?
-  amount40hc     Decimal?
-  amount40nor    Decimal?
-  notes          String?
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+model PriceQuoteLine {
+  id           String   @id @default(uuid())
+  priceQuoteId String
+  productId    String
+  unitPrice    Decimal
+  minOrderQty  Int?
+  leadTimeDays Int?
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  freightQuote FreightQuote @relation(fields: [freightQuoteId], references: [id])
+  priceQuote PriceQuote @relation(fields: [priceQuoteId], references: [id])
+  product    Product @relation(fields: [productId], references: [id])
 
-  @@index([freightQuoteId])
+  @@index([priceQuoteId])
+  @@index([productId])
 }
 
 model QuoteAttachment {
-  id             String   @id @default(uuid())
-  freightQuoteId String
-  fileName       String
-  fileUrl        String
-  createdAt      DateTime @default(now())
+  id           String   @id @default(uuid())
+  priceQuoteId String
+  fileName     String
+  fileUrl      String
+  createdAt    DateTime @default(now())
 
-  freightQuote FreightQuote @relation(fields: [freightQuoteId], references: [id])
+  priceQuote PriceQuote @relation(fields: [priceQuoteId], references: [id])
 
-  @@index([freightQuoteId])
+  @@index([priceQuoteId])
 }
 
 model AuditLog {

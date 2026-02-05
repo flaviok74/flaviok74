@@ -12,9 +12,9 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Missing organization" }, { status: 400 });
   }
 
-  const quotes = await prisma.freightQuote.findMany({
+  const quotes = await prisma.priceQuote.findMany({
     where: { organizationId },
-    include: { supplier: true, originPort: true, destinationPort: true, costLines: true }
+    include: { vendor: true, priceLines: { include: { product: true } } }
   });
 
   return NextResponse.json({ data: quotes });
@@ -29,24 +29,21 @@ export async function POST(request: Request) {
 
   const payload = await request.json();
 
-  const quote = await prisma.freightQuote.create({
+  const quote = await prisma.priceQuote.create({
     data: {
       organizationId,
-      supplierId: payload.supplierId,
-      originPortId: payload.originPortId,
-      destinationPortId: payload.destinationPortId,
+      vendorId: payload.vendorId,
       currency: payload.currency,
-      validityEnd: new Date(payload.validityEnd),
+      validTo: new Date(payload.validTo),
+      validFrom: payload.validFrom ? new Date(payload.validFrom) : undefined,
       sourceType: payload.sourceType,
       status: payload.status,
       createdByUserId: payload.createdByUserId,
-      carrier: payload.carrier,
-      service: payload.service,
-      incoterm: payload.incoterm,
+      notes: payload.notes,
       sourceUrl: payload.sourceUrl,
       sourceReference: payload.sourceReference,
-      costLines: {
-        create: payload.costLines ?? []
+      priceLines: {
+        create: payload.priceLines ?? []
       }
     }
   });

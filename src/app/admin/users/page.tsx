@@ -1,7 +1,7 @@
 const users = [
   { name: "Admin User", role: "ADMIN", email: "admin@ekoquim.test" },
-  { name: "Operador", role: "OPERATOR", email: "operador@ekoquim.test" },
-  { name: "Auditor", role: "AUDITOR", email: "auditor@ekoquim.test" }
+  { name: "Analista", role: "ANALYST", email: "analista@ekoquim.test" },
+  { name: "Leitura", role: "VIEWER", email: "viewer@ekoquim.test" }
 ];
 
 export default function UsersPage() {

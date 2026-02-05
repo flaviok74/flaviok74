@@ -1,11 +1,11 @@
-import { PrismaClient, QuoteSourceType, QuoteStatus, ChargeGroup } from "@prisma/client";
+import { PrismaClient, QuoteSourceType, QuoteStatus } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 async function main() {
   const organization = await prisma.organization.create({
     data: {
-      name: "Ekoquim Logistics",
+      name: "Ekoquim Pricing Lab",
       users: {
         create: [
           {
@@ -15,75 +15,90 @@ async function main() {
             role: "ADMIN"
           },
           {
-            name: "Operador",
-            email: "operador@ekoquim.test",
+            name: "Analista",
+            email: "analista@ekoquim.test",
             passwordHash: "changeme",
-            role: "OPERATOR"
+            role: "ANALYST"
           },
           {
-            name: "Auditor",
-            email: "auditor@ekoquim.test",
+            name: "Leitura",
+            email: "viewer@ekoquim.test",
             passwordHash: "changeme",
-            role: "AUDITOR"
+            role: "VIEWER"
           }
         ]
       }
     }
   });
 
-  const suppliers = await prisma.supplier.createMany({
+  await prisma.vendor.createMany({
     data: [
       {
         organizationId: organization.id,
-        name: "Atlantic Shipping",
+        name: "Atlas Distribuidora",
         country: "BR",
-        email: "quotes@atlantic.test",
+        email: "precos@atlas.test",
         status: "active"
       },
       {
         organizationId: organization.id,
-        name: "BlueWave Logistics",
+        name: "Norte Supply",
         country: "US",
-        email: "pricing@bluewave.test",
+        email: "sales@norte.test",
         status: "active"
       },
       {
         organizationId: organization.id,
-        name: "Pacific Global",
+        name: "Mercury Global",
         country: "CN",
-        email: "sales@pacific.test",
+        email: "pricing@mercury.test",
         status: "inactive"
       }
     ]
   });
 
-  const portData = [
-    { name: "Santos", country: "BR", code: "BRSSZ" },
-    { name: "Itajai", country: "BR", code: "BRITJ" },
-    { name: "Rio de Janeiro", country: "BR", code: "BRRIO" },
-    { name: "Hamburg", country: "DE", code: "DEHAM" },
-    { name: "Rotterdam", country: "NL", code: "NLRTM" },
-    { name: "Antwerp", country: "BE", code: "BEANR" },
-    { name: "Shanghai", country: "CN", code: "CNSHA" },
-    { name: "Ningbo", country: "CN", code: "CNNGB" },
-    { name: "Los Angeles", country: "US", code: "USLAX" },
-    { name: "New York", country: "US", code: "USNYC" }
-  ];
-
-  const ports = await prisma.port.createMany({
-    data: portData.map((port) => ({
-      organizationId: organization.id,
-      name: port.name,
-      country: port.country,
-      code: port.code
-    }))
+  const categories = await prisma.productCategory.createMany({
+    data: [
+      { organizationId: organization.id, name: "Químicos" },
+      { organizationId: organization.id, name: "Embalagens" },
+      { organizationId: organization.id, name: "Serviços" }
+    ]
   });
 
-  await prisma.containerType.createMany({
+  const categoryList = await prisma.productCategory.findMany({
+    where: { organizationId: organization.id }
+  });
+
+  await prisma.product.createMany({
     data: [
-      { name: "20GP", code: "20GP", description: "Standard 20-foot" },
-      { name: "40HC", code: "40HC", description: "High Cube 40-foot" },
-      { name: "40NOR", code: "40NOR", description: "Non-operating reefer" }
+      {
+        organizationId: organization.id,
+        categoryId: categoryList[0]?.id,
+        name: "Ácido Cítrico",
+        sku: "ACID-01",
+        unit: "kg"
+      },
+      {
+        organizationId: organization.id,
+        categoryId: categoryList[0]?.id,
+        name: "Peróxido de Hidrogênio",
+        sku: "PER-02",
+        unit: "kg"
+      },
+      {
+        organizationId: organization.id,
+        categoryId: categoryList[1]?.id,
+        name: "Container 1000L",
+        sku: "CONT-1000",
+        unit: "un"
+      },
+      {
+        organizationId: organization.id,
+        categoryId: categoryList[2]?.id,
+        name: "Frete Rodoviário",
+        sku: "SERV-FRT",
+        unit: "viagem"
+      }
     ]
   });
 
@@ -91,63 +106,38 @@ async function main() {
     where: { email: "admin@ekoquim.test" }
   });
 
-  const supplierList = await prisma.supplier.findMany({
+  const vendors = await prisma.vendor.findMany({
     where: { organizationId: organization.id }
   });
-  const portList = await prisma.port.findMany({
+
+  const products = await prisma.product.findMany({
     where: { organizationId: organization.id }
   });
 
   for (let index = 0; index < 10; index += 1) {
-    const supplier = supplierList[index % supplierList.length];
-    const origin = portList[index % portList.length];
-    const destination = portList[(index + 3) % portList.length];
-    await prisma.freightQuote.create({
+    const vendor = vendors[index % vendors.length];
+    await prisma.priceQuote.create({
       data: {
         organizationId: organization.id,
-        supplierId: supplier.id,
-        originPortId: origin.id,
-        destinationPortId: destination.id,
-        carrier: "Sample Carrier",
-        service: "Direct",
+        vendorId: vendor.id,
         currency: "USD",
-        validityEnd: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
-        transitTimeDays: 25,
-        rolloverRisk: "MEDIUM",
+        validTo: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
         sourceType: QuoteSourceType.MANUAL,
         status: QuoteStatus.APPROVED,
         createdByUserId: admin.id,
-        costLines: {
-          create: [
-            {
-              group: ChargeGroup.ORIGIN,
-              chargeName: "THC",
-              amount20gp: 120,
-              amount40hc: 180,
-              amount40nor: 180
-            },
-            {
-              group: ChargeGroup.OCEAN,
-              chargeName: "Ocean Freight",
-              amount20gp: 800,
-              amount40hc: 1200,
-              amount40nor: 1250
-            },
-            {
-              group: ChargeGroup.DESTINATION,
-              chargeName: "Documentation",
-              amount20gp: 90,
-              amount40hc: 90,
-              amount40nor: 90
-            }
-          ]
+        priceLines: {
+          create: products.map((product, productIndex) => ({
+            productId: product.id,
+            unitPrice: 10 + productIndex * 2 + index,
+            minOrderQty: 100,
+            leadTimeDays: 7 + productIndex
+          }))
         }
       }
     });
   }
 
-  void suppliers;
-  void ports;
+  void categories;
 }
 
 main()

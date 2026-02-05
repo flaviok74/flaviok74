@@ -1,6 +1,6 @@
-# Ekoquim Freight Quotes
+# Ekoquim Product Pricing
 
-Aplicativo web para coleta e gestão de cotações de frete marítimo, com multi-tenant, auditoria completa e dashboards.
+Aplicativo web para receber, comparar e analisar preços de vários produtos, com multi-tenant, auditoria completa e dashboards.
 
 ## Stack
 - Next.js (App Router) + TypeScript
@@ -33,66 +33,57 @@ npm run dev
 
 ## Seed inicial
 - 1 organização
-- 3 usuários (admin, operador, auditor)
+- 3 usuários (admin, analista, leitura)
 - 3 fornecedores
-- 10 portos
-- 3 tipos de container
-- 10 cotações com linhas de custo
+- 3 categorias
+- 4 produtos
+- 10 cotações com linhas de preço
 
 ## API (exemplos)
-### Criar cotação
-`POST /api/quotes`
+### Criar cotação de preço
+`POST /api/prices`
 ```json
 {
-  "supplierId": "uuid",
-  "originPortId": "uuid",
-  "destinationPortId": "uuid",
+  "vendorId": "uuid",
   "currency": "USD",
-  "validityEnd": "2024-12-31",
+  "validTo": "2024-12-31",
   "sourceType": "MANUAL",
   "status": "APPROVED",
   "createdByUserId": "uuid",
-  "carrier": "Maersk",
-  "service": "Direct",
-  "incoterm": "FOB",
-  "costLines": [
-    { "group": "ORIGIN", "chargeName": "THC", "amount20gp": 120 },
-    { "group": "OCEAN", "chargeName": "Freight", "amount20gp": 800 }
+  "notes": "Negociação mensal",
+  "priceLines": [
+    { "productId": "uuid", "unitPrice": 12.5, "minOrderQty": 100 }
   ]
 }
 ```
 
-### Adicionar linha de custo
-`POST /api/quotes`
+### Adicionar linha de preço
+`POST /api/prices`
 ```json
 {
-  "supplierId": "uuid",
-  "originPortId": "uuid",
-  "destinationPortId": "uuid",
+  "vendorId": "uuid",
   "currency": "USD",
-  "validityEnd": "2024-12-31",
+  "validTo": "2024-12-31",
   "sourceType": "MANUAL",
   "status": "APPROVED",
   "createdByUserId": "uuid",
-  "costLines": [
-    { "group": "DESTINATION", "chargeName": "Documentation", "amount40hc": 90 }
+  "priceLines": [
+    { "productId": "uuid", "unitPrice": 18.9, "leadTimeDays": 10 }
   ]
 }
 ```
 
 ### Aprovar importação
-`POST /api/quotes`
+`POST /api/prices`
 ```json
 {
-  "supplierId": "uuid",
-  "originPortId": "uuid",
-  "destinationPortId": "uuid",
+  "vendorId": "uuid",
   "currency": "USD",
-  "validityEnd": "2024-12-31",
+  "validTo": "2024-12-31",
   "sourceType": "WEB_LINK",
   "status": "APPROVED",
   "createdByUserId": "uuid",
-  "sourceUrl": "https://example.com/quote.pdf"
+  "sourceUrl": "https://example.com/precos.pdf"
 }
 ```
 

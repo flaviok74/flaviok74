@@ -1,0 +1,31 @@
+const vendors = [
+  { name: "Atlas Distribuidora", country: "BR", status: "ativo" },
+  { name: "Norte Supply", country: "US", status: "ativo" }
+];
+
+export default function VendorsPage() {
+  return (
+    <section className="space-y-6">
+      <div className="card">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-semibold">Fornecedores</h2>
+            <p className="text-sm text-slate-600">Cadastre empresas que enviam listas de preços.</p>
+          </div>
+          <button className="rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-white">Novo fornecedor</button>
+        </div>
+        <div className="mt-6 space-y-3">
+          {vendors.map((vendor) => (
+            <div key={vendor.name} className="flex items-center justify-between rounded-lg border border-slate-200 p-4">
+              <div>
+                <p className="font-semibold">{vendor.name}</p>
+                <p className="text-sm text-slate-600">{vendor.country}</p>
+              </div>
+              <span className="badge bg-emerald-100 text-emerald-700">{vendor.status}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
