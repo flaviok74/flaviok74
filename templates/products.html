@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Produtos</h2>
+<form method="post" class="row g-3 card p-3 mb-4">
+  <div class="col-md-4"><input class="form-control" name="name" placeholder="Produto" required></div>
+  <div class="col-md-2"><input class="form-control" name="category" placeholder="Categoria" required></div>
+  <div class="col-md-2"><input class="form-control" name="hs_code" placeholder="HS Code" required></div>
+  <div class="col-md-2"><input class="form-control" step="0.01" type="number" name="unit_cost" placeholder="Preço unit." required></div>
+  <div class="col-md-1"><input class="form-control" step="0.01" type="number" name="weight_kg" placeholder="kg" required></div>
+  <div class="col-md-1"><input class="form-control" step="0.001" type="number" name="volume_m3" placeholder="m³" required></div>
+  <div class="col-12"><button class="btn btn-success">Adicionar produto</button></div>
+</form>
+<table class="table table-hover">
+  <tr><th>Produto</th><th>Categoria</th><th>HS</th><th>Preço</th><th>Peso</th><th>Volume</th></tr>
+  {% for p in products %}
+  <tr><td>{{ p.name }}</td><td>{{ p.category }}</td><td>{{ p.hs_code }}</td><td>{{ p.unit_cost }}</td><td>{{ p.weight_kg }}</td><td>{{ p.volume_m3 }}</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Criar conta</h2>
+<form method="post" class="row g-3">
+  <div class="col-md-4"><input class="form-control" name="company_name" placeholder="Empresa" required></div>
+  <div class="col-md-4"><input class="form-control" type="email" name="email" placeholder="Email" required></div>
+  <div class="col-md-4"><input class="form-control" type="password" name="password" placeholder="Senha" required></div>
+  <div class="col-12"><button class="btn btn-success">Cadastrar</button></div>
+</form>
+{% endblock %}

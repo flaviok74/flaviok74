@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Análise da cotação {{ quote.reference }}</h2>
+<p><strong>Rota:</strong> {{ quote.origin_port }} → {{ quote.destination_port }} | <strong>Container:</strong> {{ quote.container_type }}</p>
+<div class="row g-3">
+  <div class="col-md-3"><div class="card p-2"><strong>Valor da carga</strong><br>{{ quote.currency }} {{ analysis.total_cargo_value }}</div></div>
+  <div class="col-md-3"><div class="card p-2"><strong>Custo logístico</strong><br>{{ quote.currency }} {{ analysis.total_logistics_cost }}</div></div>
+  <div class="col-md-3"><div class="card p-2"><strong>Custo total</strong><br>{{ quote.currency }} {{ analysis.total_landed_cost }}</div></div>
+  <div class="col-md-3"><div class="card p-2"><strong>Risco</strong><br>{{ analysis.risk_score }}/100</div></div>
+</div>
+
+<h4 class="mt-4">Indicadores</h4>
+<ul>
+  <li>Peso total: {{ analysis.total_weight }} kg</li>
+  <li>Volume total: {{ analysis.total_volume }} m³</li>
+  <li>Frete por kg: {{ quote.currency }} {{ analysis.cost_per_kg }}</li>
+  <li>Frete por m³: {{ quote.currency }} {{ analysis.cost_per_m3 }}</li>
+  <li>Seguro estimado: {{ quote.currency }} {{ analysis.insurance_cost }}</li>
+  <li><strong>Recomendação:</strong> {{ analysis.recommendation }}</li>
+</ul>
+
+<h4>Itens da cotação</h4>
+<table class="table table-bordered">
+  <tr><th>Produto</th><th>Qtd</th><th>Preço unit.</th><th>Total</th></tr>
+  {% for item in quote.items %}
+  <tr>
+    <td>{{ item.product.name }}</td>
+    <td>{{ item.quantity }}</td>
+    <td>{{ quote.currency }} {{ item.product.unit_cost }}</td>
+    <td>{{ quote.currency }} {{ (item.quantity * item.product.unit_cost) | round(2) }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}
