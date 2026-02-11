@@ -1,34 +1,30 @@
-# OceanQuote SaaS
+# OceanQuote SaaS (sem dependências externas)
 
-Sistema SaaS para cotação de fretes marítimos internacionais com análise de preços de múltiplos produtos por embarque.
+Sistema SaaS para cotação de fretes marítimos internacionais que recebe e analisa preços de vários produtos por embarque.
 
-## Funcionalidades
+## O que o sistema faz
 
-- Cadastro e autenticação de empresa (tenant).
-- Cadastro de produtos com HS Code, peso, volume e preço unitário.
-- Criação de cotações de frete marítimo com rota, incoterm, container, frete base, taxas e seguro.
-- Associação de quantidades de vários produtos em cada cotação.
-- Motor de análise com:
-  - custo logístico total,
-  - custo landed total,
+- Cadastro e login de empresas (multi-tenant).
+- Cadastro de produtos com categoria, HS code, peso, volume e preço unitário.
+- Criação de cotações marítimas com rota, incoterm, tipo de container e custos.
+- Associação de múltiplos produtos por cotação com quantidades.
+- Análise automática por cotação:
+  - valor da carga,
+  - custo logístico,
+  - landed cost,
   - custo por kg e por m³,
-  - score de risco operacional,
-  - recomendação comercial.
-- API JSON para consulta da análise (`/api/quotes/<id>/analysis`).
+  - score de risco,
+  - recomendação.
 
 ## Como executar
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
 python app.py
 ```
 
-Acesse em `http://localhost:5000`.
+Abra no navegador: `http://localhost:5000`
 
 ## Stack
 
-- Flask
-- SQLite
-- Bootstrap 5
+- Python padrão (`http.server`, `sqlite3`)
+- HTML/CSS
