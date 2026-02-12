@@ -1,0 +1,1 @@
+# Sem dependências externas: roda com Python padrão (sqlite3 + http.server)
