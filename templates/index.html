@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RFQ Analyzer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  </head>
+  <body>
+    <main class="container">
+      <header>
+        <h1>Sistema de análise de preços (Outlook RFQ + manual)</h1>
+        <p id="status-msg">Carregando cotações...</p>
+      </header>
+
+      <section class="manual-entry">
+        <h2>Teste rápido: adicionar cotação manual</h2>
+        <form id="manual-form">
+          <input id="manual-produto" placeholder="Produto" required />
+          <input id="manual-fornecedor" placeholder="Fornecedor (email)" />
+          <input id="manual-preco" type="number" min="0" step="0.01" placeholder="Preço" required />
+          <select id="manual-moeda">
+            <option>BRL</option>
+            <option>USD</option>
+            <option>EUR</option>
+          </select>
+          <input id="manual-quantidade" type="number" min="0" step="0.01" placeholder="Quantidade" />
+          <input id="manual-unidade" placeholder="Unidade (kg, ton, un...)" />
+          <input id="manual-assunto" placeholder="Assunto" />
+          <button type="submit">Adicionar cotação</button>
+          <button id="btn-clear-manual" type="button" class="secondary">Limpar manuais</button>
+        </form>
+        <small id="manual-msg"></small>
+      </section>
+
+      <section class="filters">
+        <label>
+          Produto
+          <input id="filter-product" type="text" placeholder="Ex: Aço, Resina..." />
+        </label>
+        <label>
+          Fornecedor
+          <input id="filter-supplier" type="text" placeholder="Email do fornecedor" />
+        </label>
+        <label>
+          Moeda
+          <select id="filter-currency">
+            <option value="">Todas</option>
+          </select>
+        </label>
+        <label>
+          Preço máximo
+          <input id="filter-max-price" type="number" min="0" step="0.01" />
+        </label>
+        <button id="btn-clear" type="button">Limpar filtros</button>
+      </section>
+
+      <section class="summary" id="summary-cards"></section>
+
+      <section>
+        <table>
+          <thead>
+            <tr>
+              <th>Produto</th>
+              <th>Fornecedor</th>
+              <th>Preço</th>
+              <th>Quantidade</th>
+              <th>Data do email</th>
+              <th>Assunto</th>
+            </tr>
+          </thead>
+          <tbody id="quotes-body"></tbody>
+        </table>
+      </section>
+
+      <footer>
+        <small id="last-update">Última atualização: -</small>
+      </footer>
+    </main>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
+</html>
